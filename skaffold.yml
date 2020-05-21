@@ -1,0 +1,21 @@
+apiVersion: skaffold/v2beta4
+kind: Config
+build:
+  tagPolicy:
+    sha256: {}
+  artifacts:
+    - image: icyfenix/bookstore-kubernetes/domain-warehouse
+      context: bookstore-microservices-domain-warehouse
+    - image: icyfenix/bookstore-kubernetes/domain-security
+      context: bookstore-microservices-domain-security
+    - image: icyfenix/bookstore-kubernetes/domain-account
+      context: bookstore-microservices-domain-account
+    - image: icyfenix/bookstore-kubernetes/domain-payment
+      context: bookstore-microservices-domain-payment
+    - image: icyfenix/bookstore-kubernetes/platform-gateway
+      context: bookstore-microservices-platform-gateway
+deploy:
+  kubectl:
+    manifests:
+      - ./bookstore-kubernetes-manifests/bookstore-namespaces.yaml
+      - ./bookstore-kubernetes-manifests/*.yml

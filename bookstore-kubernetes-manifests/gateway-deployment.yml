@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-microservices-platform-gateway
+  namespace: bookstore-microservices
+  labels:
+    app: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: icyfenix/bookstore-kubernetes/platform-gateway
+          ports:
+            - name: http-server
+              containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: JAVA_TOOL_OPTIONS
+              value: -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y

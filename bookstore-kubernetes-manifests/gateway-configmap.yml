@@ -1,0 +1,64 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: gateway
+  namespace: bookstore-microservices
+data:
+  application.yaml: |-
+    hystrix:
+      command:
+        default:
+          execution:
+            isolation:
+              thread:
+                timeoutInMilliseconds:  000
+
+    zuul:
+      ignoredServices: '*'
+      host:
+        connect-timeout-millis: 20000
+        socket-timeout-millis: 20000
+
+      routes:
+        account:
+          path: /restful/accounts/**
+          url: http://account
+          stripPrefix: false
+          sensitiveHeaders: "*"
+
+        payment:
+          path: /restful/pay/**
+          url: http://payment
+          stripPrefix: false
+          sensitiveHeaders: "*"
+
+        settlement:
+          path: /restful/settlements/**
+          url: http://payment
+          stripPrefix: false
+          sensitiveHeaders: "*"
+
+        advertisements:
+          path: /restful/advertisements/**
+          url: http://warehouse
+          stripPrefix: false
+          sensitiveHeaders: "*"
+
+        products:
+          path: /restful/products/**
+          url: http://warehouse
+          stripPrefix: false
+          sensitiveHeaders: "*"
+
+        security:
+          path: /oauth/**
+          url: http://security
+          stripPrefix: false
+          sensitiveHeaders: "*"
+
+    server:
+      port: ${PORT:8080}
+
+    logging:
+      level:
+        root: INFO

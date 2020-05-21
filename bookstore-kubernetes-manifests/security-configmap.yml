@@ -1,0 +1,26 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: security
+  namespace: bookstore-microservices
+data:
+  application.yaml: |-
+    database: hsqldb
+
+    security:
+      oauth2:
+        client:
+          clientId: security
+          clientSecret: security_secret
+          accessTokenUri: http://localhost:${PORT:80}/oauth/token
+          grant-type: client_credentials
+          scope: SERVICE
+
+    logging:
+      pattern:
+        console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(-){faint} %clr([%t]){faint} %clr(%-40logger{39}){cyan}[%line]%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
+      level:
+        root: INFO
+
+    server:
+      port: ${PORT:80}

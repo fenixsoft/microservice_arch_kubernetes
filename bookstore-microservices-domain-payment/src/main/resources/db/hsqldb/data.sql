@@ -1,0 +1,1 @@
+INSERT INTO wallet VALUES (1, 300, 1);

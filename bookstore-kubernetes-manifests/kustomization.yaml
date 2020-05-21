@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: bookstore-microservices
+
+resources:
+  - bookstore-namespaces.yaml
+  - account-configmap.yml
+  - account-deployment.yml
+  - account-service.yml
+  - gateway-configmap.yml
+  - gateway-deployment.yml
+  - gateway-service.yml
+  - payment-configmap.yml
+  - payment-deployment.yml
+  - payment-service.yml
+  - security-configmap.yml
+  - security-deployment.yml
+  - security-service.yml
+  - warehouse-configmap.yml
+  - warehouse-deployment.yml
+  - warehouse-service.yml
