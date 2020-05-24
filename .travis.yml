@@ -6,7 +6,8 @@ before_install:
 install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script:
-  - mvn clean package -Dmaven.test.skip=true
+  - mvn clean test package
+#  - mvn clean package
 deploy:
   - provider: script
     keep_history: true
