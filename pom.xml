@@ -19,9 +19,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.github.fenixsoft</groupId>
-    <artifactId>bookstore-microservice-springcloud</artifactId>
+    <artifactId>bookstore-microservice-kubernetes</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>bookstore-microservices-springcloud</name>
+    <name>bookstore-microservices-kubernetes</name>
     <description>Microservices Architecture Demonstrate with Kubernetes Infrastructure</description>
 
     <properties>
@@ -50,16 +50,6 @@
     </dependencyManagement>
 
     <build>
-        <resources>
-            <!-- 这种方式可以将JAR包引入，还不清楚原因，待研究 -->
-            <resource>
-                <targetPath>lib/</targetPath>
-                <directory>lib/</directory>
-                <includes>
-                    <include>**/spring-cloud-kubernetes-ribbon-1.1.1.RELEASE.jar</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
