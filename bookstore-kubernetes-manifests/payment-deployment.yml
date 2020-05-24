@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: payment
-          image: icyfenix/bookstore-kubernetes/domain-payment
+          image: icyfenix/bookstore-kubernetes-domain-payment
           ports:
             - name: http-server
               containerPort: 80

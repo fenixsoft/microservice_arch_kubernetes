@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: security
-          image: icyfenix/bookstore-kubernetes/domain-security
+          image: icyfenix/bookstore-kubernetes-domain-security
           ports:
             - name: http-server
               containerPort: 80

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: warehouse
-          image: icyfenix/bookstore-kubernetes/domain-warehouse
+          image: icyfenix/bookstore-kubernetes-domain-warehouse
           ports:
             - name: http-server
               containerPort: 80

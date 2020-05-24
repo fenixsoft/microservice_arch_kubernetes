@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: icyfenix/bookstore-kubernetes/platform-gateway
+          image: icyfenix/bookstore-kubernetes-platform-gateway
           ports:
             - name: http-server
               containerPort: 8080
