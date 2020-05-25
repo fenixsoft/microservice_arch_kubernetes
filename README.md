@@ -1,7 +1,7 @@
-# Fenix's BookStore后端：以Spring Cloud微服务实现
-
+# Fenix's BookStore后端：以Kubernetes微服务实现
 
 <GitHubWrapper>
+
 <p align="center">
   <a href="https://icyfenix.cn" target="_blank">
     <img width="180" src="https://raw.githubusercontent.com/fenixsoft/awesome-fenix/master/.vuepress/public/images/logo-color.png" alt="logo">
@@ -9,150 +9,74 @@
 </p>
 <p align="center">
     <a href="https://icyfenix.cn"  style="display:inline-block"><img src="https://raw.githubusercontent.com/fenixsoft/awesome-fenix/master/.vuepress/public/images/Release-v1.svg"></a>
-    <a href="https://travis-ci.com/fenixsoft/microservice_arch_springcloud" target="_blank"  style="display:inline-block"><img src="https://travis-ci.com/fenixsoft/microservice_arch_springcloud.svg?branch=master" alt="Travis-CI"></a>
-    <a href='https://coveralls.io/github/fenixsoft/microservice_arch_springcloud?branch=master'><img src='https://coveralls.io/repos/github/fenixsoft/microservice_arch_springcloud/badge.svg?branch=master'  target="_blank"  style="display:inline-block" alt='Coverage Status' /></a>
+    <a href="https://travis-ci.com/fenixsoft/microservice_arch_springcloud" target="_blank"  style="display:inline-block"><img src="https://travis-ci.com/fenixsoft/microservice_arch_kubernetes.svg?branch=master" alt="Travis-CI"></a>
     <a href="https://www.apache.org/licenses/LICENSE-2.0"  target="_blank" style="display:inline-block"><img src="https://raw.githubusercontent.com/fenixsoft/awesome-fenix/master/.vuepress/public/images/License-Apache.svg" alt="License"></a>
 <a href="https://creativecommons.org/licenses/by/4.0/"  target="_blank" style="display:inline-block"><img src="https://raw.githubusercontent.com/fenixsoft/awesome-fenix/master/.vuepress/public/images/DocLicense-CC-red.svg" alt="Document License"></a>
     <a href="https://icyfenix.cn/introduction/about-me.html" target="_blank" style="display:inline-block"><img src="https://raw.githubusercontent.com/fenixsoft/awesome-fenix/master/.vuepress/public/images/Author-IcyFenix-blue.svg" alt="About Author"></a>
 </p>
+
 </GitHubWrapper>
 
 如果你此时并不曾了解过什么是“The Fenix Project”，建议先阅读<a href="https://icyfenix.cn/introduction/about-the-fenix-project.html">这部分内容</a>。
 
-至少到目前，基于Spring Cloud的微服务解决方案仍是以Java为运行平台的微服务中，使用者数量最多的一个分支。这个结果即是Java在服务端应用中长久积累的深厚基础的体现，也是Spring在Java应用中统治性的地位的体现。Spring Cloud令现存数量极为庞大的、基于Spring和Spring Boot的单体系统，得以平滑地迁移到微服务架构中，令这些系统的大部分代码都能够无需或少量修改即可保留重用。微服务兴起的早期，Spring Cloud就集成了[Netflix OSS](https://netflix.github.io/)（以及Spring Cloud Netflix进入维护期后对应的替代组件）所开发的体系化的微服务套件，基本上算“半透明地”解决了在微服务环境中必然会面临的服务发现、远程调用、负载均衡、集中配置等基础问题。
-
-不过，笔者自己并不太认同Spring Cloud Netflix这种以应用代码去解决基础设施功能问题的“解题思路”，以笔者的观点看来，这既是容器化、原生化的微服务基础设施完全成熟之前必然会出现的应用形态，同时也决定了这是微服务进化过程中必然会被替代的过渡形态。无论笔者的看法如何，基于Spring Cloud Netflix的微服务在当前是主流，直至未来不算短的一段时间内仍会是主流，并且以应用的视角，自顶向下观察基础设施在微服务中面临的需求和挑战，用我们熟悉的Java代码来解释分析问题，也有利于对微服务的整体思想的深入理解，所以将它作为我们了解的第一种微服务架构的实现是十分适合的。
+2017年，笔者曾在文章中描述其为“<a href="https://icyfenix.cn/architecture/architect-history/post-microservices.html">后微服务时代</a>”的开端，这年是容器生态发展历史中具有里程碑意义的一年。在这一年，长期作为Docker竞争对手的[RKT容器](https://coreos.com/rkt/docs/latest/)一派的领导者CoreOS宣布放弃自己的容器管理系统Fleet，未来将会把所有容器管理的功能移至Kubernetes之上去实现。在这一年，容器管理领域的独角兽Rancher Labs宣布放弃其内置了数年的容器管理系统Cattle，提出了“All-in-Kubernetes”战略，把1.x版本能够支持多种容器管理工具的Rancher，从2.0版本开始，“升级”为只支持Kubernetes一种容器管理系统。在这一年，Kubernetes的主要竞争者Apache Mesos在9月正式宣布了“[Kubernetes on Mesos](https://k8smeetup.github.io/docs/getting-started-guides/mesos/)”集成计划，由竞争关系转为对Kubernetes提供支持，使其能够与Mesos的其他一级框架（如[HDFS](https://docs.mesosphere.com/latest/usage/service-guides/hdfs/)、[Spark](https://docs.mesosphere.com/latest/usage/service-guides/spark/) 和[Chronos](https://mesos.github.io/chronos/docs/getting-started.html)，等等）进行集群资源动态共享、分配与隔离。在这一年，Kubernetes的最大竞争者Docker Swarm的母公司Docker，终于在10月被迫宣布Docker要同时支持Swarm与Kubernetes两套容器管理系统，事实上承认了Kubernetes的统治地位。这场已经持续了三、四年时间，以Docker Swarm、Apache Mesos与Kubernetes为主要竞争者的“容器战争”终于有了明确的结果，Kubernetes登基加冕是容器发展中一个时代的终章，也将是软件架构发展下一个纪元的开端。
 
 ## 需求场景
 
-小书店Fenix's Bookstore生意日益兴隆，客人、货物、营收都在持续增长，业务越发复杂，对信息系统并发与可用方面的要求也越来越高。由于业务属性和质量属性要求的提升，信息系统需要更多的硬件资源去支撑，这是合乎情理的，但是，如果我们把需求场景列的更具体些，便会发现“合理”下面的许多无可奈何之处：
+当引入了<a href="https://icyfenix.cn/exploration/projects/microservice_arch_springcloud.html">微服务架构</a>后，小书店Fenix's Bookstore解决了扩容缩容、独立部署、运维和管理等问题，满足了产品经理不断提出的日益复杂的业务需求。可是，对于团队的开发人员、设计人员、架构人员来说，并没有感觉到工作变得轻松，微服务中的各种新技术名词，如配置中心、服务发现、网关、熔断、负载均衡等等，就够一名新手学习好长一段时间；从产品角度来看，各种Spring Cloud的技术套件，如Config、Eureka、Zuul、Hystrix、Ribbon、Feign等，也占据了产品的大部分编译后的代码容量。之所以在微服务架构中，我们选择在应用层面而不是基础设施层面去解决这些分布式问题，完全是因为由硬件构成的基础设施，跟不上由软件构成的应用服务的灵活性的无奈之举。在Kubernetes统一了容器编排管理系统之后，这些纯技术性的底层问题，便开始有了被广泛认可和采纳的基础设施层面的解决方案。因此，Fenix's Bookstore也迎来了它在“后微服务时代”中的下一次架构演进，这次进化的目标有如下两点：
 
-- 譬如，恰逢双十一购物节，短时间内会有大批的交易事件发生，这时候运维的同学对系统进行扩容以应对流量洪峰。但此时增长的业务量并不是均衡的，只有商品交易的活动剧增，其他的活动，如新商品入库、新用户注册这类并未增加多少，此时，面对“铁板一块”的单体系统，运维在做扩容时，只能把“用不上的”商品管理代码、用户管理代码也一并扩容部署。
-- 譬如，高性能硬件对性能的提升是有帮助，但对稳定性的提升通常无能为力。业务复杂度的增加促使系统的技术复杂度也在持续增长，当系统不可避免地滑向庞大臃肿时，总伴随有各种难以预料的问题出现；要维持一个庞然大物的健康生存，也对设计、开发、运维各方面的人员都提出越来越高的要求。人力终有穷时，迟早会面临“没有一个人能了解系统的所有细节”的情形；系统的复杂程度也总有极限，持续膨胀的代码终会有崩溃的一刻。
-- 譬如，……
-
-微服务的需求场景还可以列举很多，这里就不多列举了，总之，系统发展到一定程度，我们总能找到充分的理由去重构拆分它。在笔者设定的场景中，准备把<a href="https://icyfenix.cn/exploration/projects/monolithic_arch_springboot.html">单体的Fenix's Bookstore</a>拆分成为“用户”、“商品”、“交易”三个能够独立运行的子系统，它们将在一系列非功能性额技术模块（认证授权等）和基础设施（配置中心、服务发现等）的支撑下互相协作，以统一的API网关对外提供与原来单体系统在功能上一致的服务，应用视图如下图所示：
+- **目标一**：尽可能缩减非业务功能代码的比例。<br/>在Fenix's Bookstore中，用户服务（Account）、商品服务（Warehouse）、交易服务（Payment）三个工程是真正承载业务逻辑的，认证授权服务（Security）可以认为是同时跨越了技术与业务，而配置中心（Configuration）、网关（Gateway）和服务注册中心（Registry）则是纯技术性。我们希望尽量消除这些纯技术的工程，以及那些依附在其他工程上的纯技术组件。
+- **目标二**：尽可能在不影响原有的代码的前提下完成迁移。<br/>得益于Spring Framework 4中的Conditional Bean等声明式特性的出现，近年来新发布的技术组件，[声明式编程](https://en.wikipedia.org/wiki/Declarative_programming)（Declarative Programming）已经逐步取代[命令式编程](https://en.wikipedia.org/wiki/Imperative_programming)（Imperative Programming）成为主流。这使得我们可以从目的而不是过程的角度去描述需求，使得代码几乎不会与具体技术实现产生耦合，若要更换一种技术实现，只需要调整配置中的声明便可。<br/>事实上，如果仅以Java代码的角度来衡量，本工程与此前<a href="https://icyfenix.cn/exploration/projects/microservice_arch_springcloud.html">基于Spring Cloud的实现</a>没有丝毫差异，两者的每一行Java代码都是一模一样的；其区别是Kubernetes的实现中直接删除了配置中心、服务注册中心的工程，在其他工程的pom.xml中也删除了如Eureka、Ribbon等组件的依赖。取而代之的是新增的[Skaffold](https://skaffold.dev/)和Kubernetes的资源描述，这些资源描述文件，将会动态构建出DNS服务器、服务负载均衡器等一系列虚拟化的基础设施，去代替原有的应用层面的技术组件。
 
 <GitHubWrapper>
 <p align="center">
-    <img  src="https://raw.githubusercontent.com/fenixsoft/awesome-fenix/master/.vuepress/public/images/springcloud-ms.png" >
+    <img  src="https://raw.githubusercontent.com/fenixsoft/awesome-fenix/master/.vuepress/public/images/kubernetes-ms.png" >
 </p>
 </GitHubWrapper>
 
 ## 运行程序
 
-以下几种途径，可以运行程序，浏览最终的效果：
+在已经<a href="https://icyfenix.cn/appendix/deployment-env-setup/setup-kubernetes/">部署Kubernetes集群</a>的前提下，通过以下几种途径，可以运行程序，浏览最终的效果：
 
-- 通过Docker容器方式运行：<br/>微服务涉及到多个容器的协作，通过link单独运行容器已经被Docker官方声明为不提倡的方式，所以在工程中提供了专门的配置，以便使用<a href="https://icyfenix.cn/appendix/deployment-env-setup/setup-docker.html#安装docker-compose">docker-compose</a>来运行：
+- 直接在Kubernetes上运行：<br/>工程在编译时已通过Kustomize产生出集成式的资源描述文件，可以直接在Kubernetes集群中运行程序：
 
   ```bash
-  # 下载docker-compose配置文件
-  $ curl -O https://raw.githubusercontent.com/fenixsoft/microservice_arch_springcloud/master/docker-compose.yml
-  
-  # 启动服务
-  $ docker-compose up
+  # 资源描述文件
+  $ kubectl create -f https://raw.githubusercontent.com/fenixsoft/microservice_arch_kubernetes/master/bookstore.yml
   ```
-
-  然后在浏览器访问：[http://localhost:8080](http://localhost:8080)，系统预置了一个用户（user:icyfenix，pw:123456），也可以注册新用户来测试。
-
-- 通过Git上的源码，以Maven编译、运行：<br/>由于笔者已经在配置文件中设置好了各个微服务的默认的地址和端口号，以便于本地调试。如果要在同一台机运行这些服务，并且每个微服务都只启动一个实例的话，那不加任何配置、参数即可正常以Maven编译、以Jar包形式运行。由于各个微服务需要从配置中心里获取具体的参数信息，因此唯一的要求只是“配置中心”的微服务必须作为第一个启动的服务进程，对其他的启动顺序则没有更多要求了。具体的操作过程如下所示：
+  
+  当所有的Pod都处于正常工作状态后（这个过程一共需要下载几百MB的镜像，尤其是Docker中没有各层基础镜像缓存时，请根据自己的网速保持一定的耐心。未来GraalVM对Spring Cloud的支持更成熟一些后，可以考虑<a href="https://icyfenix.cn/tricks/graalvm/">采用GraalVM来改善</a>这一点），在浏览器访问：[http://localhost:30080](http://localhost:30080)，系统预置了一个用户（user:icyfenix，pw:123456），也可以注册新用户来测试。
+  
+- 通过Skaffold在命令行或IDE中以调试方式运行：<br/>一般开发基于Kubernetes的微服务应用，是在本地针对单个服务编码、调试完成后，通过CI/CD流水线部署到Kubernetes中进行集成测试的。如果只是针对集成测试，这并没有什么问题，但如果同样的方式应用在开发阶段就不十分不便了，我们不希望每做一处修改都要经过一次CI/CD，这将非常耗时。<br/>Skaffold是Google在2018年开源的一款加速应用在本地或远程Kubernetes集群中构建、推送、部署和调试的自动化命令行工具，对于Java应用来说，它可以帮助我们做到监视变动，自动打包出镜像，将镜像打Tag并更新部署到Kubernetes集群，开放JDWP调试，并根据服务端口自动做好本地的端口转发。具体的操作过程如下所示：
 
   ``` bash
   # 克隆获取源码
-  $ git clone https://github.com/fenixsoft/microservice_arch_springcloud.git
+  $ git clone https://github.com/fenixsoft/microservice_arch_kubernetes.git && cd microservice_arch_kubernetes
   
-  # 进入工程根目录
-  $ cd microservice_arch_springcloud
-  
-  # 编译打包（方式1）
-  # 采用Maven Wrapper，此方式只需要机器安装有JDK 8或以上版本即可，无需包括Maven在内的其他任何依赖
-  # 克隆后你可能需要使用chmod给mvnw赋予执行权限，如在Windows下应使用mvnw.cmd package代替以下命令
+  # 编译打包
   $ ./mvnw package
   
-  # 编译打包（方式2）
-  # 直接采用Maven，由于国内访问Apache Maven的分发地址和中央仓库速度感人
-  # 采用Maven Wrapper有可能长时间无响应，如你机器已安装了Maven，建议使用如下命令
-  $ mvn package
-  
-  # 工程将编译出七个SpringBoot Jar
-  # 启动服务需要运行以下七个微服务组件
-  # 配置中心微服务：localhost:8888
-  $ java -jar ./bookstore-microservices-platform-configuration/target/bookstore-microservice-platform-configuration-1.0.0-SNAPSHOT.jar
-  # 服务发现微服务：localhost:8761
-  $ java -jar ./bookstore-microservices-platform-registry/target/bookstore-microservices-platform-registry-1.0.0-SNAPSHOT.jar
-  # 服务网关微服务：localhost:8080
-  $ java -jar ./bookstore-microservices-platform-gateway/target/bookstore-microservices-platform-gateway-1.0.0-SNAPSHOT.jar
-  # 安全认证微服务：localhost:8301
-  $ java -jar ./bookstore-microservices-domain-security/target/bookstore-microservices-domain-security-1.0.0-SNAPSHOT.jar
-  # 用户信息微服务：localhost:8401
-  $ java -jar ./bookstore-microservices-domain-account/target/bookstore-microservices-domain-account-1.0.0-SNAPSHOT.jar
-  # 商品仓库微服务：localhost:8501
-  $ java -jar ./bookstore-microservices-domain-warehouse/target/bookstore-microservices-domain-warehouse-1.0.0-SNAPSHOT.jar
-  # 商品交易微服务：localhost:8601
-  $ java -jar ./bookstore-microservices-domain-payment/target/bookstore-microservices-domain-payment-1.0.0-SNAPSHOT.jar
-  ```
-
-  由于在命令行启动多个服务、通过容器实现各服务隔离、扩展等都较繁琐，笔者提供了一个docker-compose.dev.yml文件，便于开发期调试使用：
-
-  ```bash
-  # 使用Maven编译出JAR包后，可使用以下命令直接在本地构建镜像运行
-  $ docker-compose -f docker-compose.dev.yml up
-  ```
-
-  以上两种本地运行的方式可任选其一，服务全部启动后，在浏览器访问：[http://localhost:8080](http://localhost:8080)，系统预置了一个用户（user:icyfenix，pw:123456），也可以注册新用户来测试<br/>
-
-- 通过Git上的源码，在IDE环境中运行：
-
-  - 以IntelliJ IDEA为例，Git克隆本项目后，在File -> Open菜单选择本项目所在的目录，或者pom.xml文件，以Maven方式导入工程。
-  - 待Maven自动安装依赖后，即可在IDE或者Maven面板中编译全部子模块的程序。
-  - 本工程下面八个模块，其中除bookstore-microservices-library-infrastructure外，其余均是SpringBoot工程，将这七个工程的Application类加入到IDEA的Run Dashboard面板中。
-  - 在Run Dashboard中先启动“bookstore-microservices-platform-configuration”微服务，然后可一次性启动其余六个子模块的微服务。
-
-- 配置与横向扩展<br/>工程中预留了一些的环境变量，便于配置和扩展，譬如，对于热点模块，往往需要启动多个微服务扩容，此时需要调整每个服务的端口号。预留的这类环境变量包括：
-
-  ```bash
-  # 修改配置中心的主机和端口，默认为localhost:8888
-  CONFIG_HOST
-  CONFIG_PORT
-  
-  # 修改服务发现的主机和端口，默认为localhost:8761
-  REGISTRY_HOST
-  REGISTRY_PORT
-  
-  # 修改认证中心的主机和端口，默认为localhost:8301
-  AUTH_HOST
-  AUTH_PORT
-  
-  # 修改当前微服务的端口号
-  # 譬如，你打算在一台机器上扩容四个支付微服务以应对促销活动的流量高峰
-  # 可将它们的端口设置为8601（默认）、8602、8603、8604等
-  # 真实环境中，它们可能是在不同的物理机、容器环境下，这时扩容可无需调整端口
-  PORT
-  
-  # SpringBoot所采用Profile配置文件，默认为default
-  # 譬如，服务默认使用HSQLDB的内存模式作为数据库，如需调整为MySQL，可将此环境变量调整为mysql
-  # 因为笔者默认预置了名为applicaiton-mysql.yml的配置，以及HSQLDB和MySQL的数据库脚本
-  # 如果你需要支持其他数据库、修改程序中其他的配置信息，可以在代码中自行加入另外的初始化脚本
-  PROFILES
-  
-  # Java虚拟机运行参数，默认为空
-  JAVA_OPTS
+  # 启动Skaffold
+  # 此时将会自动打包Docker镜像，并部署到Kubernetes中
+  $ skaffold dev
   ```
   
+  服务全部启动后，在浏览器访问：[http://localhost:30080](http://localhost:30080)，系统预置了一个用户（user:icyfenix，pw:123456），也可以注册新用户来测试<br/>
+  
+  由于面对的是开发环境，基于效率原因，笔者并没有使用镜像来打包，这一方面是在Maven镜像中打包不便于利用本地的仓库缓存，这尤其在国内速度打包速度难以接受；另外一方面，是笔者并不希望每保存一次源码时，都自动构建和更新一次镜像。因此选择在本地Maven中打包，Skaffold监视的是Jar包的变动，只当进行Maven编译、输出了新的Jar包后才会更新镜像。
+  
+  另外，对于有IDE调试需求的同学，推荐采用[Google Cloud Code](https://cloud.google.com/code)来配合Skaffold使用，毕竟是一个公司的产品，搭配的体验相当愉快。Cloud Code同时提供了VS Code和IntelliJ Idea的插件。
+
 ## 技术组件
 
-Fenix's BookStore采用基于Spring Cloud微服务架构，微服务部分主要采用了Netflix OSS组件进行支持，它们包括：
+Fenix's BookStore采用基于Kubernetes的微服务架构，并采用Spring Cloud Kubernetes做了适配，其中主要的技术组件包括：
 
-- **配置中心**：默认采用[Spring Cloud Config](https://spring.io/projects/spring-cloud-config)，亦可使用[Spring Cloud Consul](https://spring.io/projects/spring-cloud-consul)、[Spring Cloud Alibaba Nacos](https://spring.io/projects/spring-cloud-alibaba)代替。
-- **服务发现**：默认采用[Netflix Eureka](https://github.com/Netflix/eureka)，亦可使用[Spring Cloud Consul](https://spring.io/projects/spring-cloud-consul)、[Spring Cloud Zookeeper](https://spring.io/projects/spring-cloud-zookeeper)、[etcd](https://github.com/etcd-io/etcd)等代替。
-- **服务网关**：默认采用[Netflix Zuul](https://github.com/Netflix/zuul)，亦可使用[Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway)代替。
-- **服务熔断**：默认采用[Netflix Hystrix](https://github.com/Netflix/Hystrix)，亦可使用[Sentinel](https://github.com/alibaba/Sentinel)、[Resilience4j](https://github.com/resilience4j/resilience4j)代替。
-- **进程内负载均衡**：默认采用[Netfilix Ribbon](https://github.com/Netflix/ribbon)，亦可使用[Spring Cloud Loadbalancer](https://spring.io/guides/gs/spring-cloud-loadbalancer/)代替。
-- **声明式HTTP客户端**：默认采用[Spring Cloud OpenFeign](https://spring.io/projects/spring-cloud-openfeign)。这个并没有代替的必要，访问远程服务而已，使用RestTemplete或者更底层的[OkHTTP](https://square.github.io/okhttp/)、[HTTPClient](https://hc.apache.org/httpcomponents-client-ga/)也能完成，多写点代码罢了。
-
-尽管Netflix套件的使用人数很多，但由于Spring Cloud Netflix已进入维护模式，所以笔者均列出了上述组件的代替品。这些组件几乎都是声明式的，这保证了替代它们的成本相当低，只需要更换注解，修改配置，无需改动代码。你在阅读源码时也会发现，三个“platform”开头的服务，基本上没有任何实际代码的存在。
-
-其他与微服务无关的技术组件（REST服务、安全、数据访问，等等），笔者已在<a href="https://icyfenix.cn/exploration/projects/monolithic_arch_springboot.html#技术组件">Fenix's BookStore单体架构</a>中介绍过，在此不再重复。
+- **配置中心**：采用Kubernetes的ConfigMap来管理，通过[Spring Cloud Kubernetes Config](https://github.com/spring-cloud/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-config)自动将ConfigMap的内容注入到Spring配置文件中，并实现动态更新。
+- **服务发现**：采用Kubernetes的Service来管理，通过[Spring Cloud Kubernetes Discovery](https://github.com/spring-cloud/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-discovery)自动将HTTP访问中的服务转换为[FQDN](https://en.wikipedia.org/wiki/Fully_qualified_domain_name)。
+- **负载均衡**：采用Kubernetes Service本身的负载均衡能力实现（就是DNS负载均衡），不再需要Ribbon这样的客户端负载均衡了。Spring Cloud Kubernetes从1.1.2开始也已经移除了对Ribbon的适配支持。
+- **服务网关**：网关部分仍然保留了Zuul，未采用Ingress代替。这里有两点考虑，一是Ingress Controller不是Kubernetes的内置组件，有不同的选择，同时也需要独立安装（尽管装集群时大多都会装好Ingress-Nginx）；二是Fenix's Bookstore的前端工程是存放在网关中的，移除了Zuul也仍然要维持一个前端工程的存在。
+- **服务熔断**：仍然采用Hystrix，Kubernetes本身无法做到精细化的服务治理，我们将在基于Istio的服务网格架构中解决这个问题。
+- **认证授权**：仍然采用Spring Security OAuth 2，Kubernetes的RBAC授权可以解决服务间的安全访问问题，但认证授权模块本身仍承担着对前端用户的认证、授权职责，这点是与业务相关的。
 
 
 ## 协议
@@ -160,7 +84,7 @@ Fenix's BookStore采用基于Spring Cloud微服务架构，微服务部分主要
 - 本文档代码部分采用[Apache 2.0协议](https://www.apache.org/licenses/LICENSE-2.0)进行许可。遵循许可的前提下，你可以自由地对代码进行修改，再发布，可以将代码用作商业用途。但要求你：
   - **署名**：在原有代码和衍生代码中，保留原作者署名及代码来源信息。
   - **保留许可证**：在原有代码和衍生代码中，保留Apache 2.0协议文件。
-  
+
 - 本作品文档部分采用[知识共享署名 4.0 国际许可协议](http://creativecommons.org/licenses/by/4.0/)进行许可。 遵循许可的前提下，你可以自由地共享，包括在任何媒介上以任何形式复制、发行本作品，亦可以自由地演绎、修改、转换或以本作品为基础进行二次创作。但要求你：
   - **署名**：应在使用本文档的全部或部分内容时候，注明原作者及来源信息。
   - **非商业性使用**：不得用于商业出版或其他任何带有商业性质的行为。如需商业使用，请联系作者。
