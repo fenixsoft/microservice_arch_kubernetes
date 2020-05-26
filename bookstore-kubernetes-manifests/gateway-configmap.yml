@@ -11,7 +11,7 @@ data:
           execution:
             isolation:
               thread:
-                timeoutInMilliseconds:  000
+                timeoutInMilliseconds: 20000
 
     zuul:
       ignoredServices: '*'

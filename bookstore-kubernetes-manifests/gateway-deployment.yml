@@ -15,6 +15,7 @@ spec:
       labels:
         app: gateway
     spec:
+      serviceAccountName: book-admin
       containers:
         - name: gateway
           image: icyfenix/bookstore-kubernetes-platform-gateway

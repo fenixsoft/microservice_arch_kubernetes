@@ -15,6 +15,7 @@ spec:
       labels:
         app: payment
     spec:
+      serviceAccountName: book-admin
       containers:
         - name: payment
           image: icyfenix/bookstore-kubernetes-domain-payment

@@ -5,6 +5,9 @@ namespace: bookstore-microservices
 
 resources:
   - bookstore-namespaces.yaml
+  - bookstore-serviceaccount.yml
+  - bookstore-role.yml
+  - bookstore-rolebinding.yml
   - account-configmap.yml
   - account-deployment.yml
   - account-service.yml

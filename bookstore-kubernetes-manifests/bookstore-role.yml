@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: book-admin-role
+  namespace: bookstore-microservices
+rules:
+  - apiGroups: [""]
+    resources:
+      - namespaces
+      - endpoints
+      - services
+      - nodes
+      - nodes/proxy
+      - pods
+      - configmaps
+    verbs:
+      - list
+      - get
+      - watch

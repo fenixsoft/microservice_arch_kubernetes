@@ -15,6 +15,7 @@ spec:
       labels:
         app: security
     spec:
+      serviceAccountName: book-admin
       containers:
         - name: security
           image: icyfenix/bookstore-kubernetes-domain-security

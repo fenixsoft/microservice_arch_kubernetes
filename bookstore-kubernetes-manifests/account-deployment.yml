@@ -15,6 +15,7 @@ spec:
       labels:
         app: account
     spec:
+      serviceAccountName: book-admin
       containers:
         - name: account
           image: icyfenix/bookstore-kubernetes-domain-account
