@@ -34,6 +34,17 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-kubernetes-all</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>kubernetes-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+            <version>4.10.1</version>
         </dependency>
     </dependencies>
 
