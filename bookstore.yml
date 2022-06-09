@@ -17,6 +17,8 @@ metadata:
 rules:
 - apiGroups:
   - ""
+  - "extensions"
+  - "app"
   resources:
   - namespaces
   - endpoints
