@@ -4,7 +4,7 @@ metadata:
   name: book-admin-role
   namespace: bookstore-microservices
 rules:
-  - apiGroups: [""]
+  - apiGroups: ["", "extensions", "apps"]
     resources:
       - namespaces
       - endpoints
